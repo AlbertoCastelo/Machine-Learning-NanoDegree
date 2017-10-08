@@ -24,6 +24,7 @@ class LearningAgent(Agent):
         ###########
         # Set any additional class parameters as needed
         # dictionaries to map states and actions to values
+        '''
         waypointValid = ['forward', 'left', 'right']
         lightValid = ['red', 'green']
 
@@ -45,7 +46,7 @@ class LearningAgent(Agent):
             i += 1
 
         print self.actionsD
-
+        '''
 
     def reset(self, destination=None, testing=False):
         """ The reset function is called at the beginning of each trial.
@@ -60,7 +61,7 @@ class LearningAgent(Agent):
         ###########
         # Update epsilon using a decay function of your choice
 
-        decayF = 0
+        decayF = 1
         if decayF == 0:
             # linear decay
             self.epsilon -= 0.05
@@ -127,14 +128,17 @@ class LearningAgent(Agent):
         ###########
         # Calculate the maximum Q-value of all actions for a given state
         #state = tuple(state)
+        '''
         vectorQ = self.Q[state]
+
         maxQ = -100000
         for act in vectorQ:
             if maxQ < vectorQ[act]:
                 maxQ = vectorQ[act]
             #print act
             #print maxQ
-
+        '''
+        maxQ = max(self.Q[state].values())
 
         return maxQ 
 
@@ -189,13 +193,15 @@ class LearningAgent(Agent):
         
         if self.learning == 0:
             # random action
-            action = actions[random.randint(0, 3)]
+            #action = actions[random.randint(0, 3)]
+            action = random.choice(self.valid_actions)
         else:
             # sample exploration-explotation distribution
             sampleEE = random.random()
             if sampleEE <= self.epsilon:
                 # random action
-                action = actions[random.randint(0, 3)]    
+                # action = actions[random.randint(0, 3)]    
+                action = random.choice(self.valid_actions)
                 
             else:
                 # action based on highest Q-value
@@ -227,12 +233,12 @@ class LearningAgent(Agent):
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
         if self.learning == True:
             state = tuple (state)
-            maxQ = self.get_maxQ(state)
+            #maxQ = self.get_maxQ(state)
             oldQ = self.Q[state][action]
             print oldQ
 
-            self.Q[state][action] = oldQ + self.alpha*(reward + maxQ - oldQ)
-
+            #self.Q[state][action] = oldQ + self.alpha*(reward + maxQ - oldQ)
+            self.Q[state][action] = oldQ + self.alpha*(reward - oldQ)
             print self.Q[state][action]
 
 
@@ -283,7 +289,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=False)
+    sim = Simulator(env, update_delay=0.01, display=False, log_metrics=True, optimized=True)
     
     ##############
     # Run the simulator
